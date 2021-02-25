@@ -18,7 +18,8 @@ class Cars():
         self.street_names = street_names
 
 def parse_input(file):
-    streets = []
+    # streets = []
+    streets = {}
     cars = []
     with open(file, 'r') as f:
         S = V = 0
@@ -28,7 +29,8 @@ def parse_input(file):
             else:
                 temp = line.split(' ')
                 if S < int(street_num):
-                    streets.append(Street(*(line.split(' '))))
+                    streets[temp[2]] = (int(temp[0]), int(temp[1]), int(temp[3]))
+                    # streets.append(Street(*(line.split(' '))))
                     S += 1
                 else:
                     temp = line.split(' ')
@@ -49,19 +51,31 @@ if __name__ == '__main__':
 
     # entering from a intersection into the road
     intersections_out = {}
-    for i in range(len(streets)):
-        if streets[i].enter not in intersections_out:
-            intersections_out[streets[i].enter] = [(streets[i].duration, streets[i].name)]
-        else:
-            intersections_out[streets[i].enter].append((streets[i].duration, streets[i].name))
-        if streets[i].leave not in intersections_in:
-            intersections_in[streets[i].leave] = [(streets[i].duration, streets[i].name)]
-        else:
-            intersections_in[streets[i].leave].append((streets[i].duration, streets[i].name))
+    for key in streets.keys():
+        enter, leave, duration = streets[key]
 
-    for i in range(len(streets)):
-        temp = streets[i].__str__()
-        print(temp)
+        if enter not in intersections_out:
+            intersections_out[enter] = [(duration, key)]
+        else:
+            intersections_out[enter].append((duration, key))
+        if leave not in intersections_in:
+            intersections_in[leave] = [(duration, key)]
+        else:
+            intersections_in[leave].append((duration, key))
+
+        # if streets[i].enter not in intersections_out:
+        #     intersections_out[streets[i].enter] = [(streets[i].duration, streets[i].name)]
+        # else:
+        #     intersections_out[streets[i].enter].append((streets[i].duration, streets[i].name))
+        # if streets[i].leave not in intersections_in:
+        #     intersections_in[streets[i].leave] = [(streets[i].duration, streets[i].name)]
+        # else:
+        #     intersections_in[streets[i].leave].append((streets[i].duration, streets[i].name))
+
+
+    # for i in range(len(streets)):
+    #     temp = streets[i].__str__()
+    #     print(temp)
 
     # print(total_num)
     print(intersections_in)
