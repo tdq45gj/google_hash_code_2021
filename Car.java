@@ -6,4 +6,8 @@ public class Car {
     public Car(int numStreets) {
         this.path = new ArrayDeque<Street>(numStreets);
     }
+
+    @Override public String toString() {
+        return this.path.toString();
+    }
 }

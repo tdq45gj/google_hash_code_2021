@@ -36,7 +36,7 @@ public class Main {
                 String name = streetVars[2];
                 int time = Integer.valueOf(streetVars[3]);
 
-                Street street = new Street(time, end);
+                Street street = new Street(time, end, name);
                 streets.put(name, street);
 
                 if (!intersections.containsKey(start)) {
@@ -56,15 +56,54 @@ public class Main {
                 for (int j = 1; j < carVars.length; j++) {
                     car.path.offer(streets.get(carVars[j]));
                 }
+                streets.get(carVars[1]).queue.offer(car);
+                System.out.println(streets.get(carVars[1]).queue);
+                // Car toPrint = streets.get(carVars[1]).queue.poll();
+                // while (toPrint != null) {
+                //     System.out.println(toPrint);
+                //     toPrint = streets.get(carVars[1]).queue.poll();
+                // }
             }
-            
+
+
+
             fileScanner.close();
         } catch (FileNotFoundException e) {
             System.out.println(e);
         }
     }
 
+    public static void solve() {
+        System.out.println("Starting to solve..");
+
+    }
+
+    // public static void write(String fileName) {
+    //     System.out.println("Starting to write results to file...");
+    //     try {
+    //         FileWriter fileWriter = new FileWriter(fileName);
+    //
+    //         fileWriter.write("" + numIntersections);
+    //         fileWriter.write("\n");
+    //
+    //         for (Map.Entry<Integer, Intersection> entry : intersections.entrySet()) {
+    //             fileWriter.write("" + entry.key + "\n");
+    //             fileWriter.write("" + entry.schedules.size() + "\n");
+    //
+    //             for (Schedule schedule : entry.schedules) {
+    //                 fileWriter.write(schedule);
+    //                 fileWriter.write("\n");
+    //             }
+    //
+    //             fileWriter.flush();
+    //         }
+    //         fileWriter.close();
+    //     } catch (IOException e) {
+    //         System.out.println(e);
+    //     }
+    // }
+
     public static void main(String[] args) {
-        initializeFromFile("/a.txt");
+        initializeFromFile("a.txt");
     }
 }
