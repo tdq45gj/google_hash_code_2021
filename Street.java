@@ -5,6 +5,8 @@ public class Street {
     public int time;
     public int end;
     public String name;
+    
+    public int count;
 
     public Street(int time, int end, String name) {
         this.time = time;

@@ -9,6 +9,7 @@ public class Main {
     private static int numIntersections;
     private static int numStreets;
     private static int numCars;
+    private static List<Car> cars;
     private static Map<Integer, Intersection> intersections;
     private static Map<String, Street> streets;
 
@@ -27,6 +28,7 @@ public class Main {
 
             intersections = new HashMap<>(numIntersections);
             streets = new HashMap<>(numStreets);
+            cars = new ArrayList<>(numCars);
 
             // read in intersections
             for (int i = 0; i < numStreets; i++) {
@@ -53,19 +55,21 @@ public class Main {
             for (int i = 0; i < numCars; i++) {
                 String[] carVars = fileScanner.nextLine().split(" ");
                 Car car = new Car(Integer.valueOf(carVars[0]));
+                int minTime = 0;
+
                 for (int j = 1; j < carVars.length; j++) {
-                    car.path.offer(streets.get(carVars[j]));
+                    Street street = streets.get(carVars[j]);
+                    minTime += street.time;
+                    car.path.offer(street);
                 }
-                streets.get(carVars[1]).queue.offer(car);
-                System.out.println(streets.get(carVars[1]).queue);
-                // Car toPrint = streets.get(carVars[1]).queue.poll();
-                // while (toPrint != null) {
-                //     System.out.println(toPrint);
-                //     toPrint = streets.get(carVars[1]).queue.poll();
-                // }
+
+                if (minTime <= duration) {
+
+                    car.minTime = minTime;
+                    cars.add(car);
+                    streets.get(carVars[1]).queue.offer(car);
+                }
             }
-
-
 
             fileScanner.close();
         } catch (FileNotFoundException e) {
@@ -73,37 +77,74 @@ public class Main {
         }
     }
 
-    public static void solve() {
+
+    public static void solveRandomly() {
         System.out.println("Starting to solve..");
 
+        for (Car car : cars) {
+            Street street = car.path.poll();
+            while (street != null) {
+                street.count++;
+                street = car.path.poll();
+            }
+        }
+
+        int cycle = duration / 10;
+
+        for (Map.Entry<Integer, Intersection> entry : intersections.entrySet()) {
+            Intersection i = entry.getValue();
+            List<Schedule> schedules = i.schedules;
+            int total = 0;
+
+            for (Street s : i.inStreets) {
+                if (s.count != 0) {
+                    schedules.add(new Schedule(s.name, s.count / s.time));
+                }
+                total += s.count;
+            }
+
+            if (schedules.size() > 0) {
+                for (Schedule schedule : schedules) {
+                    schedule.time =(int) (((float) schedule.time / (float) total) * cycle);
+                    if (schedule.time == 0) {
+                        schedule.time = 1;
+                    }
+                }
+            } else {
+                schedules.add(new Schedule(i.inStreets.get(0).name, duration));
+            }
+        }
     }
 
-    // public static void write(String fileName) {
-    //     System.out.println("Starting to write results to file...");
-    //     try {
-    //         FileWriter fileWriter = new FileWriter(fileName);
-    //
-    //         fileWriter.write("" + numIntersections);
-    //         fileWriter.write("\n");
-    //
-    //         for (Map.Entry<Integer, Intersection> entry : intersections.entrySet()) {
-    //             fileWriter.write("" + entry.key + "\n");
-    //             fileWriter.write("" + entry.schedules.size() + "\n");
-    //
-    //             for (Schedule schedule : entry.schedules) {
-    //                 fileWriter.write(schedule);
-    //                 fileWriter.write("\n");
-    //             }
-    //
-    //             fileWriter.flush();
-    //         }
-    //         fileWriter.close();
-    //     } catch (IOException e) {
-    //         System.out.println(e);
-    //     }
-    // }
+
+    public static void write(String fileName) {
+        System.out.println("Starting to write results to file...");
+        try {
+            FileWriter fileWriter = new FileWriter(fileName);
+
+            fileWriter.write("" + numIntersections);
+            fileWriter.write("\n");
+
+            for (Map.Entry<Integer, Intersection> entry : intersections.entrySet()) {
+                fileWriter.write("" + entry.getKey() + "\n");
+                fileWriter.write("" + entry.getValue().schedules.size() + "\n");
+
+                for (Schedule schedule : entry.getValue().schedules) {
+                    fileWriter.write(schedule.toString());
+                    fileWriter.write("\n");
+                }
+
+                fileWriter.flush();
+            }
+            fileWriter.close();
+        } catch (IOException e) {
+            System.out.println(e);
+        }
+    }
 
     public static void main(String[] args) {
-        initializeFromFile("a.txt");
+        initializeFromFile(args[0] + ".txt");
+        solveRandomly();
+        write(args[0] + ".out");
     }
 }
