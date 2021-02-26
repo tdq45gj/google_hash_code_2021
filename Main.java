@@ -38,7 +38,7 @@ public class Main {
                 String name = streetVars[2];
                 int time = Integer.valueOf(streetVars[3]);
 
-                Street street = new Street(time, end, name);
+                Street street = new Street(time, start, end, name);
                 streets.put(name, street);
 
                 if (!intersections.containsKey(start)) {
@@ -64,7 +64,6 @@ public class Main {
                 }
 
                 if (minTime <= duration) {
-
                     car.minTime = minTime;
                     cars.add(car);
                     streets.get(carVars[1]).queue.offer(car);
@@ -78,6 +77,24 @@ public class Main {
     }
 
 
+    public static void solveGcd() {
+        Collections.sort(cars);
+        for (Car c : cars) {
+
+        }
+    }
+
+    // public static void run(Car c) {
+    //     Street s = c.street.poll();
+    //     int time = 0;
+    //     while (s != null) {
+    //         time += s.time;
+    //         s = c.street.poll();
+    //         Schedule lastSchedule = intersections.getValue(s.start);
+    //         Schedule schedule = new Schedule(s.name, time);
+    //     }
+    // }
+
     public static void solveRandomly() {
         System.out.println("Starting to solve..");
 
@@ -89,7 +106,7 @@ public class Main {
             }
         }
 
-        int cycle = duration / 10;
+        int cycle = duration / 1000;
 
         for (Map.Entry<Integer, Intersection> entry : intersections.entrySet()) {
             Intersection i = entry.getValue();
@@ -113,6 +130,8 @@ public class Main {
             } else {
                 schedules.add(new Schedule(i.inStreets.get(0).name, duration));
             }
+
+            Collections.shuffle(schedules);
         }
     }
 
@@ -144,6 +163,7 @@ public class Main {
 
     public static void main(String[] args) {
         initializeFromFile(args[0] + ".txt");
+        solveGcd();
         solveRandomly();
         write(args[0] + ".out");
     }
